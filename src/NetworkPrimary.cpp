@@ -254,21 +254,23 @@ void NetworkPrimary::receiveNetwork()
                                             }
                                         }
                                     } else if (thisCommand.substr(0, 2).compare("RC") == 0) {
-                                        // 'RC' reset coordinates: RC,shipNo,lon,lat
+                                        // 'RC' reset coordinates: RC,shipNo,lon,lat,heading_deg
                                         std::vector<std::string> parts = Utilities::split(thisCommand, ',');
-                                        if (parts.size() != 4) {
-                                            std::cerr << "Received invalid RC command \"" << thisCommand << "\". Expected RC,shipNo,lon,lat" << std::endl;
+                                        if (parts.size() != 5) {
+                                            std::cerr << "Received invalid RC command \"" << thisCommand << "\". Expected RC,shipNo,lon,lat,heading_deg" << std::endl;
                                             continue;
                                         }
 
                                         int shipNo = Utilities::lexical_cast<int>(parts.at(1)) - 1; // Numbering on network starts at 1, internal numbering at 0
                                         irr::f32 lon = Utilities::lexical_cast<irr::f32>(parts.at(2));
                                         irr::f32 lat = Utilities::lexical_cast<irr::f32>(parts.at(3));
+                                        irr::f32 heading_deg = Utilities::lexical_cast<irr::f32>(parts.at(4));
 
                                         irr::f32 positionX = model->longToX(lon);
                                         irr::f32 positionZ = model->latToZ(lat);
 
                                         model->setPos(positionX, positionZ);
+                                        model->setHeading(heading_deg);
                                     } else if (thisCommand.substr(0,2).compare("RL") == 0) {
                                         //'RL' reset legs and position, used for AIS contacts
                                         std::vector<std::string> parts = Utilities::split(thisCommand,','); //Split into parts, 1st is command itself, 2nd and greater is the data
